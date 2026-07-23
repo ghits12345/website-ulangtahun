@@ -138,7 +138,7 @@
         z-index: 10;
         width: 100%;
         height: 100%;
-        perspective: 2000px;
+        perspective: 2500px;
         opacity: 0;
         transition: opacity 2s ease-in;
         display: flex;
@@ -146,19 +146,24 @@
         align-items: center;
       }
 
-      /* --- 3D FLIP BOOK (SUPER GEGAS TANPA DELAY) --- */
+      /* Wrapper pusat yang menjaga buku tetap stabil di tengah */
       .book-wrapper {
         position: relative;
-        transition: transform 0.2s ease-out;
+        width: 360px;
+        height: 520px;
+        transform-style: preserve-3d;
+        transition: transform 0.5s ease-out;
       }
+
+      /* Saat buku terbuka, digeser secara presisi ke kanan agar poros lipatannya tepat di tengah layar */
       .book-wrapper.open {
         transform: translateX(180px);
       }
 
       .book {
         position: relative;
-        width: 360px;
-        height: 520px;
+        width: 100%;
+        height: 100%;
         transform-style: preserve-3d;
         user-select: none;
       }
@@ -171,8 +176,8 @@
         height: 100%;
         transform-origin: left center;
         transform-style: preserve-3d;
-        /* Durasinya dipangkas menjadi 0.5s agar instan dan tidak delay sama sekali */
-        transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+        transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        will-change: transform;
         cursor: pointer;
         touch-action: manipulation;
       }
@@ -303,58 +308,22 @@
         background: #ff4081;
       }
 
-      /* --- RESPONSIF HP --- */
+      /* --- RESPONSIF HP DENGAN SKALA PRESISI (TETAP TERBUKA LEBAR & DI TENGAH) --- */
       @media (max-width: 768px) {
+        #main-stage {
+          /* Memastikan panggung mengunci elemen persis di tengah layar HP */
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        /* Menggunakan transform scale agar ukuran buku komputer yang besar 'dikecilkan' pas untuk layar HP tanpa merusak layout 3D */
+        .book-wrapper {
+          transform: scale(0.72);
+        }
         .book-wrapper.open {
-          transform: translateX(24vw);
-        }
-        .book {
-          width: 48vw;
-          height: 75vw;
-        }
-        .front,
-        .back {
-          padding: 4vw;
-          border-radius: 2px 12px 12px 2px;
-        }
-        .back {
-          border-radius: 12px 2px 2px 12px;
-        }
-        .front img,
-        .back img {
-          height: 48%;
-          border-width: 2px;
-          border-radius: 6px;
-        }
-
-        .book-title {
-          font-size: 6.5vw;
-          margin-bottom: 3vw;
-        }
-        .book-caption {
-          font-size: 4.8vw;
-          margin-top: 3vw;
-        }
-        .cover-front h2 {
-          font-size: 8.5vw;
-        }
-        .tap-hint {
-          font-size: 3.5vw;
-          margin-top: 8vw;
-        }
-
-        .btn-love {
-          font-size: 4vw;
-          padding: 3vw 6vw;
-          margin-top: 5vw;
-        }
-
-        #cinematic-text {
-          font-size: 1.5rem;
-        }
-        #final-message {
-          font-size: 1.2rem;
-          width: 95%;
+          /* Titik geser pusat skala HP */
+          transform: scale(0.72) translateX(180px);
         }
       }
 
@@ -548,9 +517,13 @@
         }
 
         setTimeout(() => {
-          mainStage.style.display = "flex";
-          setTimeout(() => (mainStage.style.opacity = "1"), 100);
+          mainstageDisplay();
         }, delay + 500);
+      }
+
+      function mainstageDisplay() {
+        mainStage.style.display = "flex";
+        setTimeout(() => (mainStage.style.opacity = "1"), 100);
       }
 
       let isBookOpen = false;
