@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lembar Kisah Kita</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Lora:ital,wght@0,400;1,400&family=Montserrat:wght@300;400;600&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        /* Background Senja Romantis */
+        background: linear-gradient(-45deg, #2b081d, #4a154b, #590d22, #38040e);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        overflow: hidden;
+        font-family: "Montserrat", sans-serif;
+        color: #fff;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      @keyframes gradientBG {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      /* --- EFEK KELOPAK BUNGA --- */
+      #petal-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 2s ease-in;
+      }
+
+      .petal {
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        border-radius: 15px 0 15px 0;
+        box-shadow: 0 0 10px rgba(255, 154, 158, 0.5);
+        top: -20px;
+        animation:
+          fall linear infinite,
+          sway ease-in-out infinite alternate;
+      }
+
+      @keyframes fall {
+        to {
+          top: 110vh;
+        }
+      }
+      @keyframes sway {
+        from {
+          transform: translateX(0px) rotate(0deg);
+        }
+        to {
+          transform: translateX(100px) rotate(360deg);
+        }
+      }
+
+      /* --- GERBANG MASUK --- */
+      #entrance {
+        position: absolute;
+        z-index: 100;
+        width: 100%;
+        height: 100%;
+        background: rgba(43, 8, 29, 0.95);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: opacity 1.5s ease;
+      }
+
+      .pulse-text {
+        font-family: "Dancing Script", cursive;
+        font-size: 2.5rem;
+        color: #ff9a9e;
+        text-shadow: 0 0 20px rgba(255, 154, 158, 0.6);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.6;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.1);
+          text-shadow: 0 0 30px #ff9a9e;
+        }
+      }
+
+      /* --- TEKS SINEMATIK --- */
+      #cinematic-text {
+        position: absolute;
+        z-index: 50;
+        font-family: "Lora", serif;
+        font-style: italic;
+        font-size: 2rem;
+        text-align: center;
+        width: 90%;
+        opacity: 0;
+        transition: opacity 1.5s ease;
+        color: #ffe6e6;
+        text-shadow: 0 0 15px rgba(255, 182, 193, 0.6);
+        pointer-events: none;
+      }
+
+      /* --- PANGGUNG UTAMA --- */
+      #main-stage {
+        display: none;
+        position: absolute;
+        z-index: 10;
+        width: 100%;
+        height: 100%;
+        perspective: 2000px; /* Diperbesar agar 3D tidak melengkung aneh saat buku membesar */
+        opacity: 0;
+        transition: opacity 2s ease-in;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* --- 3D FLIP BOOK DESKTOP (UKURAN RAKSASA) --- */
+      .book-wrapper {
+        position: relative;
+        transition: transform 0.8s ease;
+      }
+      /* Menggeser buku ke kanan persis setengah lebarnya saat dibuka */
+      .book-wrapper.open {
+        transform: translateX(180px);
+      }
+
+      .book {
+        position: relative;
+        width: 360px;
+        height: 520px;
+        transform-style: preserve-3d;
+        user-select: none;
+      }
+
+      .page {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform-origin: left center;
+        transform-style: preserve-3d;
+        transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+        cursor: pointer;
+        touch-action: manipulation; /* Anti zoom dadakan di HP */
+      }
+
+      .front,
+      .back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        background: #fffde7;
+        border: 1px solid #e0e0e0;
+        box-shadow:
+          inset 0 0 20px rgba(0, 0, 0, 0.05),
+          5px 5px 15px rgba(0, 0, 0, 0.3);
+        border-radius: 2px 15px 15px 2px;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #333;
+      }
+
+      .back {
+        transform: rotateY(180deg);
+        border-radius: 15px 2px 2px 15px;
+        box-shadow:
+          inset 0 0 20px rgba(0, 0, 0, 0.05),
+          -5px 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .page.flipped {
+        transform: rotateY(-180deg);
+      }
+
+      .front img,
+      .back img {
+        width: 100%;
+        height: 260px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 4px solid #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      .book-title {
+        font-family: "Dancing Script", cursive;
+        font-size: 2.5rem;
+        color: #d81b60;
+        text-align: center;
+        margin-bottom: 20px;
+        line-height: 1.1;
+      }
+      .book-caption {
+        font-family: "Dancing Script", cursive;
+        font-size: 1.8rem;
+        color: #555;
+        margin-top: 15px;
+        text-align: center;
+        line-height: 1.2;
+      }
+      .cover-front {
+        background: linear-gradient(135deg, #d81b60, #880e4f);
+        color: white;
+        border: 2px solid #ff9a9e;
+      }
+      .cover-front h2 {
+        font-family: "Dancing Script", cursive;
+        font-size: 3.5rem;
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        text-align: center;
+        line-height: 1.2;
+      }
+      .tap-hint {
+        font-size: 1rem;
+        margin-top: 50px;
+        font-weight: 300;
+        opacity: 0.8;
+        animation: pulse 1.5s infinite;
+      }
+
+      .btn-love {
+        background: #d81b60;
+        color: #fff;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        font-family: "Montserrat", sans-serif;
+        font-weight: 600;
+        border-radius: 30px;
+        margin-top: 30px;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(216, 27, 96, 0.4);
+        transition: 0.3s;
+      }
+      .btn-love:hover {
+        transform: scale(1.05);
+        background: #ff4081;
+      }
+
+      /* =========================================
+           SISTEM MAX-VIEWPORT UNTUK HP (100% FIT)
+           ========================================= */
+      @media (max-width: 768px) {
+        /* Menggeser pas di tengah. 24vw + 24vw = 48vw (pusat simetris) */
+        .book-wrapper.open {
+          transform: translateX(24vw);
+        }
+
+        /* Tiap halaman selebar 48% dari HP. Saat dibuka = 96% lebar layar! (Ini ukuran fisik termentok di HP) */
+        .book {
+          width: 48vw;
+          height: 75vw;
+        }
+
+        .front,
+        .back {
+          padding: 4vw;
+          border-radius: 2px 12px 12px 2px;
+        }
+        .back {
+          border-radius: 12px 2px 2px 12px;
+        }
+
+        .front img,
+        .back img {
+          height: 48%;
+          border-width: 2px;
+          border-radius: 6px;
+        }
+
+        /* Teks menggunakan vw (viewport width) agar membesar dinamis dan tajam */
+        .book-title {
+          font-size: 6.5vw;
+          margin-bottom: 3vw;
+        }
+        .book-caption {
+          font-size: 4.8vw;
+          margin-top: 3vw;
+        }
+        .cover-front h2 {
+          font-size: 8.5vw;
+        }
+        .tap-hint {
+          font-size: 3.5vw;
+          margin-top: 8vw;
+        }
+
+        .btn-love {
+          font-size: 4vw;
+          padding: 3vw 6vw;
+          margin-top: 5vw;
+        }
+
+        #cinematic-text {
+          font-size: 1.6rem;
+        }
+        #final-message {
+          font-size: 1.2rem;
+          width: 95%;
+        }
+      }
+
+      /* --- FINAL STAGE: HATI & KATA-KATA --- */
+      #finale-stage {
+        display: none;
+        position: absolute;
+        z-index: 20;
+        width: 100%;
+        height: 100%;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 2s ease-in;
+      }
+
+      .heart {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        background: #ff3366;
+        transform: rotate(-45deg);
+        animation: heartbeat 1.2s infinite;
+        box-shadow: 0 0 40px rgba(255, 51, 102, 0.6);
+        margin-bottom: 60px;
+      }
+      .heart::before,
+      .heart::after {
+        content: "";
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        background: #ff3366;
+        border-radius: 50%;
+      }
+      .heart::before {
+        top: -60px;
+        left: 0;
+      }
+      .heart::after {
+        top: 0;
+        left: 60px;
+      }
+
+      @keyframes heartbeat {
+        0% {
+          transform: rotate(-45deg) scale(1);
+        }
+        15% {
+          transform: rotate(-45deg) scale(1.2);
+          box-shadow: 0 0 60px rgba(255, 51, 102, 0.8);
+        }
+        30% {
+          transform: rotate(-45deg) scale(1);
+        }
+        45% {
+          transform: rotate(-45deg) scale(1.1);
+        }
+        60% {
+          transform: rotate(-45deg) scale(1);
+        }
+        100% {
+          transform: rotate(-45deg) scale(1);
+        }
+      }
+
+      #final-message {
+        font-family: "Lora", serif;
+        font-size: 1.4rem;
+        text-align: center;
+        color: #ffe6e6;
+        width: 85%;
+        max-width: 600px;
+        line-height: 1.8;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        min-height: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Audio BGM -->
+    <audio id="bg-music" loop>
+      <source src="assets/Taylor Swift - Begin Again.mp3" type="audio/mpeg" />
+    </audio>
+
+    <!-- Kelopak Bunga -->
+    <div id="petal-container"></div>
+
+    <!-- Gerbang Sentuh -->
+    <div id="entrance" onclick="startJourney()">
+      <div class="pulse-text">Sentuh untuk membuka...</div>
+    </div>
+
+    <!-- Teks Sinematik -->
+    <div id="cinematic-text"></div>
+
+    <!-- PANGGUNG 1: BUKU 3D -->
+    <div id="main-stage">
+      <div class="book-wrapper" id="book-wrapper">
+        <div class="book">
+          <!-- Halaman 4 (Paling Belakang - Terdapat Tombol Kejutan) -->
+          <div class="page" id="page4" style="z-index: 1">
+            <div class="front" style="background: #fffde7">
+              <h2 class="book-title">Akhir Lembar</h2>
+              <p class="book-caption" style="font-size: 1.3rem">Buku ini mungkin usai, tapi cerita kita baru dimulai.</p>
+              <button class="btn-love" onclick="showFinale(event)">Buka Hatiku</button>
+            </div>
+            <div class="back"></div>
+          </div>
+
+          <!-- Halaman 3 -->
+          <div class="page" id="page3" style="z-index: 2" onclick="flipPage(this, 3)">
+            <div class="front">
+              <img src="https://images.unsplash.com/photo-1474552226712-ac0f0961a954?q=80&w=400&auto=format&fit=crop" alt="Foto 4" />
+              <p class="book-caption">Semua momen ini...</p>
+            </div>
+            <div class="back">
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop" alt="Foto 5" />
+              <p class="book-caption">Sangat berharga.</p>
+            </div>
+          </div>
+
+          <!-- Halaman 2 -->
+          <div class="page" id="page2" style="z-index: 3" onclick="flipPage(this, 2)">
+            <div class="front">
+              <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=400&auto=format&fit=crop" alt="Foto 2" />
+              <p class="book-caption">Hal favoritku.</p>
+            </div>
+            <div class="back">
+              <img src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=400&auto=format&fit=crop" alt="Foto 3" />
+              <p class="book-caption">Adalah senyummu.</p>
+            </div>
+          </div>
+
+          <!-- Halaman 1 (Cover) -->
+          <div class="page" id="page1" style="z-index: 4" onclick="flipPage(this, 1)">
+            <div class="front cover-front">
+              <h2>Album Kenangan</h2>
+              <p class="book-caption" style="color: #fff">Untukmu, Cantik.</p>
+              <p class="tap-hint">(Klik buku untuk membuka)</p>
+            </div>
+            <div class="back">
+              <img src="https://images.unsplash.com/photo-1518049362265-d5b2a6467637?q=80&w=400&auto=format&fit=crop" alt="Foto 1" />
+              <p class="book-caption">Awal mula kita.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANGGUNG 2: HATI & KATA-KATA -->
+    <div id="finale-stage">
+      <div class="heart"></div>
+      <div id="final-message"></div>
+    </div>
+
+    <script>
+      // 1. Generate Kelopak Bunga
+      const petalContainer = document.getElementById("petal-container");
+      for (let i = 0; i < 35; i++) {
+        let petal = document.createElement("div");
+        petal.className = "petal";
+        petal.style.left = Math.random() * 100 + "vw";
+        petal.style.animationDuration = Math.random() * 5 + 5 + "s, " + (Math.random() * 3 + 2) + "s";
+        petal.style.animationDelay = Math.random() * -10 + "s, " + Math.random() * -10 + "s";
+        let size = Math.random() * 8 + 10;
+        petal.style.width = size + "px";
+        petal.style.height = size + "px";
+        petalContainer.appendChild(petal);
+      }
+
+      // 2. Animasi Masuk
+      const entrance = document.getElementById("entrance");
+      const bgMusic = document.getElementById("bg-music");
+      const cinematicText = document.getElementById("cinematic-text");
+      const mainStage = document.getElementById("main-stage");
+
+      const scriptLines = ["Ada banyak cara untuk bilang sayang...", "Sebagian lewat kata-kata...", "Dan aku, lewat kode ini.", "Selamat Ulang Tahun."];
+
+      let hasStarted = false;
+
+      async function startJourney() {
+        if (hasStarted) return;
+        hasStarted = true;
+
+        bgMusic.play().catch((err) => console.log("Audio diblokir:", err));
+
+        entrance.style.opacity = "0";
+        setTimeout(() => {
+          entrance.style.display = "none";
+          petalContainer.style.opacity = "1";
+        }, 1500);
+
+        let delay = 2000;
+        for (let i = 0; i < scriptLines.length; i++) {
+          setTimeout(() => {
+            cinematicText.innerText = scriptLines[i];
+            cinematicText.style.opacity = "1";
+            setTimeout(() => (cinematicText.style.opacity = "0"), 3000);
+          }, delay);
+          delay += 4500;
+        }
+
+        setTimeout(() => {
+          mainStage.style.display = "flex";
+          setTimeout(() => (mainStage.style.opacity = "1"), 100);
+        }, delay + 500);
+      }
+
+      // 3. Logika Flip Book 3D (Anti-Bug Z-Index)
+      let isBookOpen = false;
+      const bookWrapper = document.getElementById("book-wrapper");
+
+      function flipPage(pageElement, pageNum) {
+        if (!pageElement.classList.contains("flipped")) {
+          pageElement.classList.add("flipped");
+          setTimeout(() => {
+            pageElement.style.zIndex = pageNum;
+          }, 400);
+
+          if (!isBookOpen) {
+            bookWrapper.classList.add("open");
+            isBookOpen = true;
+          }
+        } else {
+          pageElement.classList.remove("flipped");
+          pageElement.style.zIndex = 5 - pageNum;
+
+          if (pageNum === 1) {
+            bookWrapper.classList.remove("open");
+            isBookOpen = false;
+          }
+        }
+      }
+
+      // 4. Logika Panggung Akhir
+      const finaleStage = document.getElementById("finale-stage");
+      const finalMessage = document.getElementById("final-message");
+      const finalTxt = "Aku mungkin nggak pandai merangkai bunga, tapi aku bisa rancang bangun barisan kode ini khusus dari awal untukmu. I like you, more than you know. Selamat ulang tahun ya...";
+
+      function showFinale(event) {
+        event.stopPropagation(); // Cegah klik beruntun
+
+        mainStage.style.opacity = "0";
+
+        setTimeout(() => {
+          mainStage.style.display = "none";
+
+          finaleStage.style.display = "flex";
+          setTimeout(() => {
+            finaleStage.style.opacity = "1";
+          }, 100);
+
+          setTimeout(typeFinalMessage, 1500);
+        }, 2000);
+      }
+
+      let charIndex = 0;
+      function typeFinalMessage() {
+        if (charIndex < finalTxt.length) {
+          finalMessage.innerHTML += finalTxt.charAt(charIndex);
+          charIndex++;
+          setTimeout(typeFinalMessage, 70);
+        }
+      }
+    </script>
+  </body>
+</html>
