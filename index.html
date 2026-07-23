@@ -2,7 +2,6 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <!-- Tambahan meta khusus untuk mencegah zoom dan memastikan render 1:1 di HP -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Lembar Kisah Kita</title>
     <style>
@@ -25,7 +24,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        -webkit-font-smoothing: antialiased; /* Membuat tepian render HP lebih halus */
+        -webkit-font-smoothing: antialiased;
       }
 
       @keyframes gradientBG {
@@ -40,7 +39,7 @@
         }
       }
 
-      /* --- EFEK KELOPAK BUNGA --- */
+      /* --- KELOPAK BUNGA --- */
       #petal-container {
         position: absolute;
         top: 0;
@@ -122,7 +121,7 @@
         z-index: 50;
         font-family: "Lora", serif;
         font-style: italic;
-        font-size: 2rem;
+        font-size: 1.8rem;
         text-align: center;
         width: 90%;
         opacity: 0;
@@ -147,10 +146,10 @@
         align-items: center;
       }
 
-      /* --- 3D FLIP BOOK DESKTOP --- */
+      /* --- 3D FLIP BOOK (SUPER GEGAS TANPA DELAY) --- */
       .book-wrapper {
         position: relative;
-        transition: transform 0.8s ease;
+        transition: transform 0.2s ease-out;
       }
       .book-wrapper.open {
         transform: translateX(180px);
@@ -172,19 +171,18 @@
         height: 100%;
         transform-origin: left center;
         transform-style: preserve-3d;
-        transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+        /* Durasinya dipangkas menjadi 0.5s agar instan dan tidak delay sama sekali */
+        transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
         cursor: pointer;
         touch-action: manipulation;
       }
 
-      /* --- PERBAIKAN Z-FIGHTING (ANTI OUTLINE BERTUMPUK DI HP) --- */
-      /* Menghapus border tipis yang sering bikin error render di HP, diganti bayangan halus */
       .front,
       .back {
         position: absolute;
         width: 100%;
         height: 100%;
-        -webkit-backface-visibility: hidden; /* Fix khusus Safari iOS */
+        -webkit-backface-visibility: hidden;
         backface-visibility: hidden;
         background: #fffde7;
         box-shadow:
@@ -197,12 +195,11 @@
         justify-content: center;
         align-items: center;
         color: #333;
-        outline: 1px solid transparent; /* Fix untuk garis bergerigi */
+        outline: 1px solid transparent;
       }
 
       .back {
         border-radius: 15px 2px 2px 15px;
-        /* Pemisahan sisi depan dan belakang setebal 1px */
         -webkit-transform: rotateY(180deg) translateZ(1px);
         transform: rotateY(180deg) translateZ(1px);
       }
@@ -212,7 +209,6 @@
         transform: translateZ(1px);
       }
 
-      /* Pemberian Jarak Fisik 3D Tiap Halaman Agar Tidak Saling Tembus */
       #page1 {
         transform: translateZ(4px);
         z-index: 4;
@@ -230,7 +226,6 @@
         z-index: 1;
       }
 
-      /* Saat dilipat ke kiri, jarak Z tetap mengikuti fisika 3D yang benar */
       #page1.flipped {
         transform: rotateY(-180deg) translateZ(4px);
       }
@@ -241,7 +236,7 @@
         transform: rotateY(-180deg) translateZ(2px);
       }
 
-      /* Isi Kertas */
+      /* Isi Buku */
       .front img,
       .back img {
         width: 100%;
@@ -308,9 +303,7 @@
         background: #ff4081;
       }
 
-      /* =========================================
-           SISTEM MAX-VIEWPORT UNTUK HP (100% FIT)
-           ========================================= */
+      /* --- RESPONSIF HP --- */
       @media (max-width: 768px) {
         .book-wrapper.open {
           transform: translateX(24vw);
@@ -357,7 +350,7 @@
         }
 
         #cinematic-text {
-          font-size: 1.6rem;
+          font-size: 1.5rem;
         }
         #final-message {
           font-size: 1.2rem;
@@ -560,20 +553,24 @@
         }, delay + 500);
       }
 
-      // --- JS FLIP BOOK DIPERBARUI ---
-      // Karena Z-Index dan jarak fisik sudah diurus oleh CSS murni, JS sekarang jauh lebih simpel
       let isBookOpen = false;
       const bookWrapper = document.getElementById("book-wrapper");
 
       function flipPage(pageElement, pageNum) {
         if (!pageElement.classList.contains("flipped")) {
           pageElement.classList.add("flipped");
+          setTimeout(() => {
+            pageElement.style.zIndex = pageNum;
+          }, 200);
+
           if (!isBookOpen) {
             bookWrapper.classList.add("open");
             isBookOpen = true;
           }
         } else {
           pageElement.classList.remove("flipped");
+          pageElement.style.zIndex = 5 - pageNum;
+
           if (pageNum === 1) {
             bookWrapper.classList.remove("open");
             isBookOpen = false;
@@ -583,7 +580,7 @@
 
       const finaleStage = document.getElementById("finale-stage");
       const finalMessage = document.getElementById("final-message");
-      const finalTxt = "Aku mungkin nggak pandai merangkai bunga, tapi aku bisa rancang bangun barisan kode ini khusus dari awal untukmu. I like you, more than you know. Selamat ulang tahun ya...";
+      const finalTxt = "Aku mungkin nggak pandai merangkai bunga, tapi aku bisa merancang bangun barisan kode ini khusus dari awal untukmu. I like you, more than you know. Selamat ulang tahun ya...";
 
       function showFinale(event) {
         event.stopPropagation();
