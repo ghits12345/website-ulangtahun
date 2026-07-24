@@ -498,38 +498,71 @@
           opacity: 1 !important;
         }
       }
+      /* Desktop - tetap normal/center */
+      @media (min-width: 769px) {
+        .book-wrap {
+          perspective: 2400px;
+          width: min(86vw, 380px);
+          height: min(62vh, 520px);
+        }
+      }
+
+      /* Mobile - geser buku ke kanan */
       @media (max-width: 768px) {
         .book-wrap {
-          perspective: 800px; /* Kurangi lebih drastis */
-          width: 80vw;
-          max-width: 280px;
+          perspective: 1200px;
+          width: 90vw;
+          max-width: 320px;
           height: auto;
           aspect-ratio: 1 / 1.3;
+          margin-left: auto; /* Geser ke KANAN */
+          margin-right: 12px; /* Beri jarak dari tepi kanan */
         }
 
         .scene {
-          padding: 16px 12px; /* Kurangi padding scene juga */
+          align-items: flex-end; /* Align ke kanan */
+          padding-right: 0;
         }
 
-        .leaf {
-          overflow: visible; /* Pastikan tidak ada overflow tersembunyi */
+        .book-wrap {
+          width: 85vw;
+          max-width: 300px;
         }
 
         .face {
-          padding: 14px;
-          overflow: visible;
+          padding: 18px;
+        }
+
+        .msg {
+          font-size: 15px;
+          max-width: 100%;
+        }
+
+        .photo-slot {
+          width: 140px;
+          height: 140px;
         }
       }
 
       @media (max-width: 480px) {
         .book-wrap {
-          perspective: 600px; /* Drastic reduction */
-          width: 75vw; /* Lebih kecil */
-          max-width: 260px;
+          perspective: 1000px;
+          width: 88vw;
+          max-width: 280px;
+          margin-left: auto;
+          margin-right: 8px;
+        }
+
+        .scene {
+          align-items: flex-end;
         }
 
         .face {
-          padding: 12px;
+          padding: 14px;
+        }
+
+        .msg {
+          font-size: 13px;
         }
       }
     </style>
