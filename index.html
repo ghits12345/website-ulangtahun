@@ -527,13 +527,43 @@
           width: 100px; /* Lebih kecil */
           height: 100px;
         }
+        .face.cover {
+          justify-content: space-between; /* Spacing rapi */
+          padding-top: 16px;
+          padding-bottom: 16px;
+        }
+
+        .face.cover .eyebrow {
+          font-size: 9px;
+        }
 
         .face.cover .title {
           font-size: 20px;
+          margin: 10px 0;
         }
 
         .face.cover .sub {
           font-size: 11px;
+          line-height: 1.4;
+        }
+
+        .face.cover div:last-child {
+          margin-top: auto; /* "from mughits" tetap di bawah tapi terlihat */
+          font-size: 11px;
+          padding-bottom: 0;
+        }
+        .cake-wrap {
+          justify-content: flex-start; /* Geser ke atas */
+          padding-top: 16px;
+        }
+
+        .hero-text {
+          font-size: 22px; /* Kecilkan ukuran text */
+          margin-top: 12px;
+        }
+
+        .blow-hint {
+          font-size: 9px;
         }
       }
 
@@ -548,6 +578,30 @@
 
         .face {
           padding: 8px;
+        }
+
+        .face.cover {
+          justify-content: space-between;
+          padding-top: 14px;
+          padding-bottom: 12px;
+        }
+
+        .face.cover .title {
+          font-size: 18px;
+          margin: 8px 0;
+        }
+
+        .face.cover .sub {
+          font-size: 10px;
+        }
+
+        .face.cover div:last-child {
+          font-size: 10px;
+        }
+
+        .face.cover div:last-child {
+          margin-top: 10px;
+          font-size: 11px;
         }
 
         .msg {
@@ -565,6 +619,15 @@
 
         .face.cover .title {
           font-size: 18px;
+        }
+        .cake-wrap {
+          justify-content: flex-start;
+          padding-top: 14px;
+        }
+
+        .hero-text {
+          font-size: 20px;
+          margin-top: 10px;
         }
       }
     </style>
